@@ -1,0 +1,323 @@
+﻿@model List<RoundModel>
+
+
+<div class="container">
+    <div class="row justify-content-center" style="margin-bottom:15px;">
+        <h3>Choose round</h3>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-8 text-center">
+            @foreach (var item in @Model)
+            {
+                <button onclick="GetRound(@item.Round, '@item.Flag')" style="margin-right:5px;">@item.Round @item.Flag</button>
+            }
+            <div style="margin-top: 10px;">
+                <p id="Messages" style="color:blue"></p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-4">
+            <button style="" id="ResultButton" onclick="showResult()" hidden>Help</button>
+        </div>
+        <div class="col-4">
+            <p id="result"></p>
+        </div>
+        <div class="col-3">
+        </div>
+    </div>
+    <div class="row" id="wordRow" style="margin-top:10px;" hidden>
+        <div class="col-1 text-center">
+            <p id="WordsCounter"></p>
+        </div>
+        <div class="col-4">
+            <input id="EnglishInput" disabled style="width:100%" />
+        </div>
+        <div class="col-4">
+            <input id="SerbianInput" style="width:100%" />
+        </div>
+        <div class="col-3">
+            <button id="CheckWord" onclick="CheckWord()">Check</button>
+        </div>
+    </div>
+
+    <div class="row" id="wordRowSrbToEng" style="margin-top:10px;" hidden>
+        <div class="col-1">
+            <input id="wordNumber" style="width:100%" onchange="changeNumber()"/>
+        </div>
+        <div class="col-1 text-center">
+            <p id="WordsCounterSrbToEng"></p>
+        </div>
+        <div class="col-4">
+            <input id="SerbianInputSrbToEng" disabled style="width:100%" />
+        </div>
+        <div class="col-3">
+            <input id="EnglishInputSrbToEng" style="width:100%" onkeydown="myFunction(event)"/>
+        </div>
+        <div class="col-3">
+            <button id="CheckWordSrbToEng" onclick="CheckWordSrbToEng()">Check</button>
+        </div>
+    </div>
+
+    <div id="previousItem" style="margin-top:20px;">
+
+    </div>
+</div>
+
+
+@section Scripts{
+
+    <script>
+
+        var globalCounter = 1;
+        var amountWords;
+        var direction=0;
+
+        class Queue {
+            // Array is used to implement a Queue
+            constructor() {
+                this.items = [];
+            }
+            enqueue(element) {
+                // adding element to the queue
+                this.items.push(element);
+            }
+            printQueue() {
+                $("#previousItem").empty();
+                var str = "";
+                for (var i = 0; i < this.items.length; i++) {
+                    str += this.items[i].eng + " ";
+                    $("#previousItem").append("<div style=\"margin-top:5px;\" class=\"row\"><div class=\"col-1\"></div><div class=\"col-4\">" + this.items[i].eng + "</div><div class=\"col-4\">" + this.items[i].srb + "</div></div>");
+                }
+                return str;
+            }
+            printQueueSrbToEng() {
+                $("#previousItem").empty();
+                var str = "";
+                for (var i = 0; i < this.items.length; i++) {
+                    console.log(JSON.parse(this.items[i].eng).name)
+                    str += JSON.parse(this.items[i].eng).name + " ";
+                    $("#previousItem").append("<div style=\"margin-top:5px;\" class=\"row\"><div class=\"col-1\"></div><div class=\"col-4\">" + this.items[i].srb + "</div><div class=\"col-4\">" + JSON.parse(this.items[i].eng).name + "</div></div>");
+                }
+                return str;
+            }
+            dequeue() {
+                if (this.isEmpty())
+                    return "Underflow";
+                return this.items.shift();
+            }
+            length() {
+                // return true if the queue is empty.
+                var pom = this.items.length;
+                return pom;
+            }
+            // isEmpty function
+            isEmpty() {
+                // return true if the queue is empty.
+                return this.items.length == 0;
+            }
+            printQueuee() {
+                console.log("print")
+                var str = "";
+                for (var i = 0; i < this.items.length; i++) {
+                    console.log(this.items[i].eng)
+                    str += this.items[i].eng + " ";
+                }
+                    
+                return str;
+            }
+        }
+        var queue = new Queue();
+
+        function GetRound(round, flag) {
+            $("#Messages").text("");
+            $("#ResultButton").removeAttr('hidden');
+            bootbox.prompt({
+                title: "Choose translation direction!",
+                value: [],
+                inputType: 'checkbox',
+                inputOptions: [{
+                    text: 'English -> Serbian',
+                    value: '1',
+                },
+                {
+                    text: 'Serbian -> English',
+                    value: '2',
+                }],
+                callback: function (d) {
+                    direction = d;
+                    $.ajax({
+                        dataType: 'json',
+                        data: { round: round, flag: flag },
+                        type: 'post',
+                        url: "/Dictionary/GetRound",
+                        success: function (result) {
+                            if (direction[0] == 1) {
+                                localStorage.clear();
+                                $("#WordsCounter").text(globalCounter + "/" + result.length);
+                                amountWords = result.length;
+                                for (i = 0; i < result.length; i++) {
+                                    localStorage.setItem(result[i].english, result[i].serbian)
+                                }
+                                $("#wordRow").removeAttr('hidden');
+                                $("#EnglishInput").val(result[0].english);
+                            }
+                            else if (direction[0] == 2) {
+                                localStorage.clear();
+                                $("#WordsCounterSrbToEng").text(globalCounter + "/" + result.length);
+                                amountWords = result.length;
+                                
+                                for (i = 0; i < result.length; i++) {
+                                    var myObject = {
+                                        name: result[i].english,
+                                        number: i+1
+                                    }
+                                    //console.log(myObject.name)
+                                    //console.log(myObject.number)
+                                    localStorage.setItem(result[i].serbian, JSON.stringify(myObject))
+                                }
+                                $("#wordRowSrbToEng").removeAttr('hidden');
+                                $("#SerbianInputSrbToEng").val(result[0].serbian);
+                            }
+                        },
+                        error: function (err) {
+
+                        }
+                    });
+                }
+            });
+        }
+
+        function CheckWord() {
+            $("#result").text("");
+            var eng = $("#EnglishInput").val();
+            var srb = $("#SerbianInput").val().toLowerCase();
+
+            $("#EnglishInput").css({ "borderColor": "black" });
+            $("#SerbianInput").css({ "borderColor": "black" });
+            var res = localStorage.getItem(eng);
+            var resLowerCase = localStorage.getItem(eng).toLowerCase();
+            if (resLowerCase.includes(srb) && srb.length > 0) {
+                var pom = {
+                    "eng": eng,
+                    "srb": res
+                };
+                queue.enqueue(pom);
+                queue.printQueue();
+                if (queue.length() == 10) {
+                    queue.dequeue();
+                }
+                globalCounter++;
+                $("#WordsCounter").text(globalCounter + "/" + amountWords);
+
+                localStorage.removeItem(eng);
+                var localStorageLength = localStorage.length;
+                if (localStorageLength > 0) {
+                    var key = localStorage.key(0);
+                    $("#EnglishInput").val(key);
+                    $("#SerbianInput").focus();
+                }
+                else {
+                    $("#Messages").text("Round finished");
+                    $("#EnglishInput").val("");
+                }
+                $("#SerbianInput").val("");
+            }
+            else {
+                $("#SerbianInput").focus();
+                $("#EnglishInput").css({ "borderColor": "red" });
+                $("#SerbianInput").css({ "borderColor": "red" });
+            }
+        }
+
+        function CheckWordSrbToEng() {
+            $("#result").text("");
+            var eng = $("#EnglishInputSrbToEng").val().toLowerCase();
+            var srb = $("#SerbianInputSrbToEng").val();
+            $("#EnglishInputSrbToEng").css({ "borderColor": "black" });
+            $("#SerbianInputSrbToEng").css({ "borderColor": "black" });
+            
+            var res = localStorage.getItem(srb);
+            var resLowerCase = localStorage.getItem(srb).toLowerCase();
+            if (resLowerCase.includes(eng) && eng.length > 0) {
+                var pom = {
+                    "eng": res,
+                    "srb": srb
+                };
+                queue.enqueue(pom);
+                queue.printQueueSrbToEng();
+                if (queue.length() == 10) {
+                    queue.dequeue();
+                }
+                
+                var num = JSON.parse(localStorage.getItem(srb)).number + 1;
+                //localStorage.removeItem(srb);
+                globalCounter++;
+                if (globalCounter < amountWords + 1) {
+                    $("#WordsCounterSrbToEng").text(globalCounter + "/" + amountWords);
+                    for (i = 0; i < localStorage.length; i++) {
+                        if (JSON.parse(localStorage.getItem(localStorage.key(i))).number == num) {
+                            $("#SerbianInputSrbToEng").val(localStorage.key(i));
+                            $("#EnglishInputSrbToEng").focus();
+                        }
+                    }
+                }
+                else {
+                    $("#Messages").text("Round finished");
+                    $("#SerbianInputSrbToEng").val("");
+                }
+                $("#EnglishInputSrbToEng").val("");
+            }
+            else {
+                $("#EnglishInputSrbToEng").focus();
+                $("#EnglishInputSrbToEng").css({ "borderColor": "red" });
+                $("#SerbianInputSrbToEng").css({ "borderColor": "red" });
+            }
+        }
+
+        function showResult() {
+            if (direction == 1) {
+                var eng = $("#EnglishInput").val();
+                var srb = localStorage.getItem(eng);
+                $("#result").text(srb);
+            }
+            else if (direction == 2) {
+                var srb = $("#SerbianInputSrbToEng").val();
+                var eng = JSON.parse(localStorage.getItem(srb)).name;
+                $("#result").text(eng);
+            }
+        }
+
+        function myFunction(event) {
+            var x = event.keyCode;
+            if (x == 27) {
+                showResult()
+            }
+        }
+
+        function changeNumber() {
+
+            for (i = 0; i < localStorage.length; i++) {
+                if (JSON.parse(localStorage.getItem(localStorage.key(i))).number == $('#wordNumber').val()) {
+                    $("#SerbianInputSrbToEng").val(localStorage.key(i))
+                    for (i = 0; i < localStorage.length; i++) {
+                        if (JSON.parse(localStorage.getItem(localStorage.key(i))).number < $('#wordNumber').val()) {
+                            //console.log(localStorage.key(i))
+                            //console.log(JSON.parse(localStorage.getItem(localStorage.key(i))).number)
+                            //localStorage.removeItem(localStorage.key(i));
+                            globalCounter = $('#wordNumber').val();
+                            $('#WordsCounterSrbToEng').text(globalCounter + "/" + amountWords);
+                        }
+                    }
+                }
+            }
+
+        }
+
+
+
+    </script>
+
+
+}
