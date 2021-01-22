@@ -52,7 +52,7 @@ namespace DulkyBook.Controllers
             }
             else
             {
-                response = _entity.Dictionary.Where(d => d.Round == round).Select(d => new DictionaryModel
+                response = _entity.Dictionary.Where(d => d.Round == round && d.Flag == null).Select(d => new DictionaryModel
                 {
                     Id = d.Id,
                     English = d.English,
