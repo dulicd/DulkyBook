@@ -38,7 +38,7 @@ namespace DulkyBook.Controllers
                     English = d.English,
                     Serbian = d.Serbian,
                     Round = d.Round
-                }).ToList();
+                }).OrderBy(x => Guid.NewGuid()).ToList();
             }
             else if (flag != null && flag.Equals("w"))
             {
@@ -48,7 +48,7 @@ namespace DulkyBook.Controllers
                     English = d.English,
                     Serbian = d.Serbian,
                     Round = d.Round
-                }).ToList();
+                }).OrderBy(x => Guid.NewGuid()).ToList();
             }
             else
             {
@@ -58,7 +58,7 @@ namespace DulkyBook.Controllers
                     English = d.English,
                     Serbian = d.Serbian,
                     Round = d.Round
-                }).ToList();
+                }).OrderBy(x => Guid.NewGuid()).ToList();
             }
             
             return Json(response);
