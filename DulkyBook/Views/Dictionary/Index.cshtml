@@ -9,7 +9,24 @@
         <div class="col-8 text-center">
             @foreach (var item in @Model)
             {
-                <button onclick="GetRound(@item.Round, '@item.Flag')" style="margin-right:5px;">@item.Round @item.Flag</button>
+                if (item.Flag == null)
+                {
+                    <button onclick="GetRound(@item.Round, '@item.Flag')" style="margin-right:5px; margin-top: 5px;">@item.Round @item.Flag</button>
+                }
+            }
+            @foreach (var item in @Model)
+            {
+                if (item.Flag != null && item.Flag.Contains('s'))
+                {
+                    <button onclick="GetRound(@item.Round, '@item.Flag')" style="margin-right:5px; margin-top: 5px;">@item.Round @item.Flag</button>
+                }
+            }
+            @foreach (var item in @Model)
+            {
+                if (item.Flag != null && item.Flag.Contains('w'))
+                {
+                    <button onclick="GetRound(@item.Round, '@item.Flag')" style="margin-right:5px; margin-top: 5px;">@item.Round @item.Flag</button>
+                }
             }
             <div style="margin-top: 10px;">
                 <p id="Messages" style="color:blue"></p>
@@ -235,6 +252,7 @@
             $("#result").text("");
             var eng = $("#EnglishInputSrbToEng").val().toLowerCase();
             var srb = $("#SerbianInputSrbToEng").val();
+            eng = eng.trim();
             $("#EnglishInputSrbToEng").css({ "borderColor": "black" });
             $("#SerbianInputSrbToEng").css({ "borderColor": "black" });
             
