@@ -49,7 +49,7 @@
             <p id="WordsCounter"></p>
         </div>
         <div class="col-4">
-            <textarea id="EnglishInput" disabled style="width:100%"></textarea>
+            <textarea id="EnglishInput" disabled style="width:100%; color: white"></textarea>
         </div>
         <div class="col-4">
             <textarea id="SerbianInput" style="width:100%"></textarea>
@@ -61,13 +61,13 @@
 
     <div class="row" id="wordRowSrbToEng" style="margin-top:10px;" hidden>
         <div class="col-1">
-            <input id="wordNumber" style="width:100%" onchange="changeNumber()"/>
+            <input id="wordNumber" style="width:100%" onchange="changeNumber()" />
         </div>
         <div class="col-1 text-center">
             <p id="WordsCounterSrbToEng"></p>
         </div>
         <div class="col-4">
-            <textarea id="SerbianInputSrbToEng" disabled style="width:100%"></textarea>
+            <textarea id="SerbianInputSrbToEng" disabled style="width:100%; color: white"></textarea>
         </div>
         <div class="col-3">
             <textarea id="EnglishInputSrbToEng" style="width:100%" onkeydown="myFunction(event)"></textarea>
@@ -76,7 +76,7 @@
             <button id="CheckWordSrbToEng" onclick="CheckWordSrbToEng()">Check</button>
         </div>
     </div>
-
+   
     <div id="previousItem" style="margin-top:20px;">
 
     </div>
@@ -211,8 +211,8 @@
             var eng = $("#EnglishInput").val();
             var srb = $("#SerbianInput").val().toLowerCase();
 
-            $("#EnglishInput").css({ "borderColor": "black" });
-            $("#SerbianInput").css({ "borderColor": "black" });
+            $("#EnglishInput").css({ "borderColor": "rgba(118, 118, 118, 0.3)" });
+            $("#SerbianInput").css({ "borderColor": "rgba(118, 118, 118, 0.3)" });
             var res = localStorage.getItem(eng);
             var resLowerCase = localStorage.getItem(eng).toLowerCase();
             if (resLowerCase.includes(srb) && srb.length > 0) {
@@ -253,8 +253,9 @@
             var eng = $("#EnglishInputSrbToEng").val().toLowerCase();
             var srb = $("#SerbianInputSrbToEng").val();
             eng = eng.trim();
-            $("#EnglishInputSrbToEng").css({ "borderColor": "black" });
-            $("#SerbianInputSrbToEng").css({ "borderColor": "black" });
+            $("#EnglishInputSrbToEng").css({ "borderColor": "rgba(118, 118, 118, 0.3)" });
+            $("#SerbianInputSrbToEng").css({ "borderColor": "rgba(118, 118, 118, 0.3)" });
+            
             
             var res = localStorage.getItem(srb);
             var resLowerCase = localStorage.getItem(srb).toLowerCase();
