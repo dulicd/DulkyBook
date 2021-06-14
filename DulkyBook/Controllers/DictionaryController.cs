@@ -22,12 +22,12 @@ namespace DulkyBook.Controllers
             {
                 Round = d.Round.ToString(),
                 Flag = d.Flag
-            }).Distinct().OrderBy(x => Convert.ToInt32(x.Round)).ToList();
+            }).Distinct().OrderBy(x => Convert.ToDouble(x.Round)).ToList();
 
             return View(response);
         }
 
-        public IActionResult GetRound(int round, string flag)
+        public IActionResult GetRound(double round, string flag)
         {
             var response = new List<DictionaryModel>();
             if (flag != null && flag.Equals("s"))
@@ -43,6 +43,26 @@ namespace DulkyBook.Controllers
             else if (flag != null && flag.Equals("w"))
             {
                 response = _entity.Dictionary.Where(d => d.Round == round && d.Flag.Equals("w")).Select(d => new DictionaryModel
+                {
+                    Id = d.Id,
+                    English = d.English,
+                    Serbian = d.Serbian,
+                    Round = d.Round
+                }).OrderBy(x => Guid.NewGuid()).ToList();
+            }
+            else if (flag != null && flag.Equals("w"))
+            {
+                response = _entity.Dictionary.Where(d => d.Round == round && d.Flag.Equals("w")).Select(d => new DictionaryModel
+                {
+                    Id = d.Id,
+                    English = d.English,
+                    Serbian = d.Serbian,
+                    Round = d.Round
+                }).OrderBy(x => Guid.NewGuid()).ToList();
+            }
+            else if (flag != null && flag.Equals("vb"))
+            {
+                response = _entity.Dictionary.Where(d => d.Round == round && d.Flag.Equals("vb")).Select(d => new DictionaryModel
                 {
                     Id = d.Id,
                     English = d.English,

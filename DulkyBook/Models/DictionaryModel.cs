@@ -10,6 +10,6 @@ namespace DulkyBook.Models
         public long Id { get; set; }
         public string English { get; set; }
         public string Serbian { get; set; }
-        public int Round { get; set; }
+        public double Round { get; set; }
     }
 }

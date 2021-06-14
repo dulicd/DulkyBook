@@ -28,6 +28,13 @@
                     <button onclick="GetRound(@item.Round, '@item.Flag')" style="margin-right:5px; margin-top: 5px;">@item.Round @item.Flag</button>
                 }
             }
+            @foreach (var item in @Model)
+            {
+                if (item.Flag != null && item.Flag.Contains("vb"))
+                {
+                    <button onclick="GetRound(@item.Round, '@item.Flag')" style="margin-right:5px; margin-top: 5px;">@item.Round @item.Flag</button>
+                }
+            }
             <div style="margin-top: 10px;">
                 <p id="Messages" style="color:blue"></p>
             </div>
